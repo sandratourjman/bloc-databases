@@ -1,0 +1,134 @@
+###Exercises
+
+> 1. List the commands for adding, updating, and deleting data.
+
+A: Adding data command: INSERT INTO. Updating data command: UPDATE. Deleting data command: DELETE
+
+> 2. Explain the structure for each type of command.
+
+A: 
+
+The INSERT INTO command adds data into a table. For example, 
+INSERT INTO library (name, quantity, price) VALUES ('Gone with the Wind', 4, 12.99); inserts into the table called 'library' the values within the () to the corresponding columns (name, quantity, price).
+
+The UPDDATE command modifies existing records within a table. For example,
+UPDATE library SET price=17.98 where name='The Alchemist'; is updating the library table and setting a new price of $17.98 for the book named 'The Alchemist'.
+
+The DELETE command deletes an entry from a table. For example,
+DELETE FROM library WHERE name='The Scarlett Letter'; is deleting from the table called library the book who's name is 'The Scarlett Letter'.
+
+> 3. What are some of the data types that can be used in tables? Give a real-world example of each type.
+
+
+A: Some examples of data types are numeric, float, int, varchar. For example, a bookstore wants to keep track of all the books they have on hand. They can have a table with the data types listed previously with the following columns: isbn numeric, price float, quantity int, name varchar.
+
+> 4. Decide how to create a new table to hold a list of people invited to a wedding dinner. The table needs to have first and last names, whether they sent in their RSVP, the number of guests they are bringing, and the number of meals (1 for adults and 1/2 for children).
+
+* Which data type would you use to store each of the following pieces of information?
+	* First and last name.
+	* Whether they sent in their RSVP.
+	* Number of guests.
+	* Number of meals.
+* Write a command that creates the table to track the wedding dinner.
+* Write a command that adds a column to track whether the guest sent a thank you card.
+* You have decided to move the data about the meals to another table, so write a command to remove the column storing the number meals from the wedding table.
+* The guests will need a place to sit at the reception, so write a command that adds a column for table number.
+* The wedding is over and we do not need to keep this information, so write a command that deletes the table numbers from the database.
+
+A: 
+CREATE TABLE wedding_guests (
+	first_name text,
+	last_name text,
+	rsvp boolean,
+	guests int,
+	meals int
+);
+
+ALTER TABLE wedding_guests ADD COLUMN sent_thank_you_card boolean;
+ALTER TABLE wedding_guests DROP COLUMN meals;
+ALTER TABLE wedding_guests ADD COLUMN table_num numeric;
+ALTER TABLE wedding_guests DROP COLUMN table_num;
+
+
+> 5.Write a command to create a new table to hold the books in a library with the columns ISBN, title, author, genre, publishing date, number of copies, and available copies.
+
+* Find three books and add their information to the table.
+* Someone has just checked out one of the books. Change the number of available copies to 1 fewer.
+* Now one of the books has been added to the banned books list. Remove it from the table.
+
+A: 
+CREATE TABLE library (
+	isbn int,
+	title text,
+	author text,
+	genre text,
+	publishing_date date,
+	num_of_copies int,
+	available_copies int
+);
+
+INSERT INTO library 
+VALUES
+(9780446365383, 'Gone with the Wind', 'Margaret Mitchell', 'Historical Fiction', '1936-06-30', 4, 2),
+(0545010225, 'Harry Potter and the Deathly Hallows', 'J.K. Rowling', 'Fantasy', '2007-07-21', 10, 6),
+(9780451414069, 'To Selena, With Love', 'Chris Perez', 'Biography', '2013-11-05', 2, 1);
+
+UPDATE library SET available_copies=1 WHERE isbn=9780446365383;
+DELETE FROM library WHERE isbn=0545010225;
+
+> 6.  Write a command to make a new table to hold spacecrafts. Information should include id, name, year launched, country of origin, a brief description of the mission, orbiting body, if it is currently operating, and its approximate miles from Earth. In addition to the table creation, provide commands that perform the following operations:
+
+* Add three non-Earth-orbiting satellites to the table.
+* Remove one of the satellites from the table since it has just crashed into the planet.
+* Edit another satellite because it is no longer operating and change the value to reflect that.
+
+A: 
+
+CREATE TABLE spacecrafts (
+	id varchar,
+	name text,
+	year_launched date,
+	country_of_origin text,
+	mission text,
+	orbiting_body text,
+	currently_operating boolean,
+	miles_from_earth numeric
+);
+
+INSERT INTO spacecrafts
+VALUES 
+('2007-004 ', 'Themis', '2007-02-17', 'USA', 'Mission to study energy releases from Earths magnetosphere', 'Moon', true, 225622),
+('1971-045A', 'Mars 2', '1971-05-19', 'Soveit Union', 'Part of the unmanned space probe of the Mars program', 'Mars', false, 139808518),
+('1988-058A', 'Phobos 1', '1988-07-08', 'Russia', 'Part of unmanned space probe of the Phobos programs intended to to explore Mars and its moons Phobos and Deimos', 'Phobos', 'false', 48340000);
+
+DELETE from spacecrafts WHERE id='1971-045A';
+UPDATE spacecrafts SET currently_operating=false WHERE id='2007-004';
+
+> 7. Write a command to create a new table to hold the emails in your inbox. This table should include an id, the subject line, the sender, any additional recipients, the body of the email, the timestamp, whether or not you have read the email, and the id of the email chain it's in. Also provide commands that perform the following operations:
+
+* Add three new emails to the inbox.
+* You deleted one of the emails, so write a command to remove the row from the inbox table.
+* You started reading an email but just heard a crash in another room. Mark the email as unread before investigating the crash, so you can come back and read it later.
+
+A: 
+
+CREATE TABLE inbox (
+	id int,
+	subject text,
+	sender text,
+	cc text,
+	body text,
+	time_stamp timestamp,
+	read boolean,
+	email_chain_id varchar
+);
+
+INSERT INTO inbox
+VALUES
+(1,'Application for Job', 'joesmith@hmail.com', 'annawhite@hmail.com', 'Hi Jack, Thanks for submiting your application. We will review and get back to you.', '2018-09-04 09:04:42', false, 001234),
+(2, 'Recipe for tacos', 'nancypear@hmail.com', '', 'Hi hunny, Here is the recipe for the tacos we had last week. Love Mom', '2019-02-19 13:25:24', true, 001235),
+(3, 'Resume Revisions' 'smithwest@hmail.com', 'jakewest@hmail', 'Hi Smith and Jake, Thanks for looking over my resume', '2019-03-07 22:13:10', false, 002343);
+
+
+DELETE FROM inbox WHERE id=3;
+UPDATE inbox SET read=false WHERE id=2;
