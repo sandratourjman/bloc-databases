@@ -1,0 +1,126 @@
+###Exercises
+
+> 1. How do you find related data held in two separate data tables?
+
+A: To find related data held in two separate data tables, you would use a JOIN clause on those tables to query the columns from each, which results in a table with information from each. The JOIN does not add it to your database.
+
+> 2. Explain, in your own words, the difference between an INNER JOIN, LEFT OUTER JOIN, and RIGHT OUTER JOIN. Give a real-world example for each.
+
+A: INNER JOIN is the default JOIN method of combining data from 2 tables, of which the results share a common row for each queried table. If you had a customers table and and an orders table, you can inner join the two tables to find out which orders are related to which customers. Each customer would be associated to an order. (no nulls)
+
+LEFT OUTER JOIN combines the two tables so that the results from the first table is returned with the matching row from the second table. To continue on our customers and orders table, if we wanted to append order info (like items and date purchased) regardless of if a customer placed an order, we could use a left outer join to grab that information to add to each customer in the first table. 
+
+RIGHT OUTER JOIN is the reverse of the 'LEFT OUTER JOIN' where it combines the two tables and the result from that takes each row from the second table and its matching row from the first table. RIGHT OUTER JOIN would be the reverse of the previous example, if we wanted to add customer info to each order regardless if there is an associated customer to that order (could be a guest customer that didn't wish to enter info to be stored).
+
+> 3. Define primary key and foreign key. Give a real-world example for each.
+
+A: A primary key is a unique identifer in a table. There can only be 1 primary key to exist in the entire table. A foreign key is often the primary key in another table that allows you to link the two tables together. For example, if you had a teachers table with each professor in a high school listed out, the primary key would be the teacher'd ID. Another table would be classes table where each class has it's own section ID to indenity when the class is taught. Only 1 teacher can teach 1 section of that class so in the teacher's table, the section ID would be the foreign key.
+
+> 4. Define aliasing.
+
+A: Aliasing is giving a table name a shorthand so you don't have to type the full name. For instance, a table called students can be given the alias 's' and a table called teachers can be given the alias 't'.
+
+> 5. Change this query so that you are using aliasing:
+SELECT professor.name, compensation.salary, compensation.vacation_days 
+FROM professor 
+JOIN compensation 
+ON professor.id = compensation.professor_id;
+
+A: SELECT p.name, c.salary, c.vacation_days
+FROM professor AS p
+JOIN compensation AS c
+ON p.id = c.professor_id;
+
+> 6. Why would you use a NATURAL JOIN? Give a real-world example. 
+
+A: You would use NATURAL JOIN to implicitly join two tables based on the shares columns. For example, if you had two tables, one for vendors and one for products, you can use natural join to join the same columns to see which vendors have which products, like product_id would be a foreign key in vendors table. 
+
+> 7. Using this Employee schema and data, write queries to find the following information:
+* List all employees and all shifts.
+
+Table: https://www.db-fiddle.com/f/sG1TKgR15GhH8cjbAwzjAm/0
+
+A: 
+select e.*, s.date, s.start_time, s.end_time
+from employees as e
+full outer join scheduled_shifts as ss
+on ss.employee_id = e.id
+full outer join shifts as s
+on s.id = ss.shift_id;
+
+> 8. Using this Adoption schema and data, please write queries to retrieve the following information and include the results:
+* Create a list of all volunteers. If the volunteer is fostering a dog, include each dog as well.
+* The cat's name, adopter's name, and adopted date for each cat adopted within the past month to be displayed as part of the "Happy Tail" social media promotion which posts recent successful adoptions.
+* Create a list of adopters who have not yet chosen a dog to adopt.
+* Lists of all cats and all dogs who have not been adopted.
+* The name of the person who adopted Rosco.
+
+Table: https://www.db-fiddle.com/f/tpodLv3A43VL4gHqohqx2o/0
+
+A: 
+* 
+select v.first_name, v.last_name, d.name 
+from volunteers as v
+left outer join dogs as d
+on v.foster_dog_id = d.id;
+
+* 
+select c.name, a.first_name, a.last_name, ca.date
+from cats as c
+join cat_adoptions as ca
+on ca.cat_id = c.id
+join adopters as a
+on ca.adopter_id = a.id
+where ca.date >= (CURRENT_DATE - INTERVAL '30 DAYS');
+
+* 
+select a.first_name, a.last_name 
+from adopters as a
+left join dog_adoptions as da
+on da.adopter_id = a.id
+where da.adopter_id is null;
+
+* 
+select c.name 
+from cats as c 
+left join cat_adoptions as ca
+on ca.cat_id = c.id
+where ca.adopter_id is null
+union
+select d.name
+from dogs as d
+left join dog_adoptions as da
+on da.dog_id = d.id
+and da.adopter_id is null;
+
+*  
+select a.first_name, a.last_name
+from dogs
+join dog_adoptions as da on dogs.id = da.dog_id
+join adopters as a on a.id = da.adopter_id
+where dogs.name = 'Rosco';
+
+
+> 9. Using this Library schema and data, write queries applying the following scenarios and include the results:
+* To determine if the library should buy more copies of a given book, please provide the names and position, in order, of all of the patrons with a hold (request for a book with all copies checked out) on "Advanced Potion-Making".
+* List all of the library patrons. If they have one or more books checked out, list the books with the patrons.
+
+Table: https://www.db-fiddle.com/f/j4EGoWzHWDBVtiYzB9ygC4/0
+
+A:
+* 
+select p.name, h.rank
+from patrons as p
+join holds as h
+on h.patron_id = p.id
+join books as b using (isbn)
+where b.title = 'Advanced Potion-Making'
+order by h.rank;
+
+* 
+select p.name, books.*, t.checked_out_date, t.checked_in_date
+from patrons as p
+left outer join transactions as t
+on p.id = t.patron_id
+left outer join books using (isbn)
+order by p.name;
