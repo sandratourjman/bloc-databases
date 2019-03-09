@@ -118,9 +118,10 @@ where b.title = 'Advanced Potion-Making'
 order by h.rank;
 
 * 
-select p.name, books.*, t.checked_out_date, t.checked_in_date
-from patrons as p
-left outer join transactions as t
+select p.name, b.title
+from transactions as t
+right join patrons as p
 on p.id = t.patron_id
-left outer join books using (isbn)
-order by p.name;
+left join books as b
+on t.isbn = b.isbn
+and t.checked_in_date is null;
